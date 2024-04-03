@@ -333,7 +333,9 @@ async fn route(env: Arc<Env>, req: Request<IncomingBody>) -> Result<Response<Box
 
                     handle_jsonrpc(env, &request_headers, &rpc_request)
                         .await
-                        .unwrap_or_else(|_| {
+                        .unwrap_or_else(|err| {
+                            error!("JSON-RPC Internal error: {err}");
+
                             fn error(id: Option<Id>) -> RpcResult {
                                 RpcResult::error(id, -32603, "Internal error")
                             }
@@ -435,16 +437,18 @@ async fn add_to_cache(
     calls: &[&RpcCall],
     results: &HashMap<Option<Id>, RpcResult>,
 ) -> Result<PgQueryResult> {
-    let cacheable_results: Vec<(CacheKey, Value)> = calls
+    let cacheable_results: Vec<(CacheKey, String)> = calls
         .iter()
         .filter_map(|call| {
             let cache_key = get_cache_key(call)?;
             let result = results.get(&call.id)?;
 
             if result.result.is_some() {
-                let json_value = serde_json::to_value(result).ok()?;
+                let json_value = serde_json::to_string(result).ok()?;
 
-                Some((cache_key, json_value))
+                let escaped_json_value = json_value.replace("\u{0000}", "\\u0000");
+
+                Some((cache_key, escaped_json_value))
             } else {
                 None
             }
