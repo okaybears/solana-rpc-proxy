@@ -269,7 +269,7 @@ fn preferred_encoding(request_headers: &HeaderMap) -> Encoding {
     fly_accept_encoding::encodings_iter(request_headers)
         .filter_map(|result| result.ok())
         .filter_map(|(encoding, q)| encoding.map(|e| (e, q)))
-        .filter(|(_, q)| q != &f32::NAN)
+        .filter(|(_, q)| !q.is_nan())
         .max_by(|(_, q1), (_, q2)| q1.partial_cmp(q2).unwrap_or(Ordering::Equal))
         .map(|(encoding, _)| encoding)
         .unwrap_or(Encoding::Identity)
