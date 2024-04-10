@@ -33,14 +33,8 @@ jobs:
         with:
           targets: ${{ github.event.inputs.target }}
 
-      - name: Install build dependencies
-        run: sudo apt-get update && sudo apt-get install libssl-dev pkg-config
-
       - name: Install Cross
-        shell: bash
-        run: |
-          curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
-          cargo binstall --no-confirm cross
+        run: cargo install cross --git https://github.com/cross-rs/cross
 
       - name: Build Binary
         run: cross build --verbose --locked --release --target ${{ github.event.inputs.target }}
