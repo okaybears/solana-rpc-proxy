@@ -16,7 +16,7 @@ jobs:
     env:
       BINARY_NAME: solana-rpc-proxy
       BINARY_PATH: ~/.local/bin
-      TARGET: ${{ secrets.TARGET || "aarch64-unknown-linux-gnu" }}
+      TARGET: ${{ secrets.TARGET || 'aarch64-unknown-linux-gnu' }}
       SSH_USER_HOST: solana-rpc-proxy@${{ secrets.HOST }}
       SYSTEMD_UNIT_PATH: ~/.config/systemd/user
     steps:
@@ -34,7 +34,7 @@ jobs:
       - name: Set up Rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: ${{ github.event.inputs.target }}
+          targets: ${{ env.TARGET }}
 
       - name: Install Cross
         run: cargo install cross --git https://github.com/cross-rs/cross
@@ -46,13 +46,13 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Adding ${{ secrets.HOST }} to known_hosts...
+      - name: Adding the host to known_hosts...
         run: ssh-keyscan ${{ secrets.HOST }} >> ~/.ssh/known_hosts
 
       - name: Stopping the service...
         run: ssh $SSH_USER_HOST "systemctl --user stop $BINARY_NAME.service || true"
 
-      - name: Copying the binary to ${{ vars.HOST }}...
+      - name: Copying the binary...
         run: scp $BINARY_NAME $SSH_USER_HOST:$BINARY_PATH/$BINARY_NAME
 
       - name: Making the binary executable...
