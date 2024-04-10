@@ -53,7 +53,7 @@ jobs:
         run: ssh $SSH_USER_HOST "systemctl --user stop $BINARY_NAME.service || true"
 
       - name: Copying the binary...
-        run: scp $BINARY_NAME $SSH_USER_HOST:$BINARY_PATH/$BINARY_NAME
+        run: scp target/$TARGET/release/$BINARY_NAME $SSH_USER_HOST:$BINARY_PATH/$BINARY_NAME
 
       - name: Making the binary executable...
         run: ssh $SSH_USER_HOST "chmod +x $BINARY_PATH/$BINARY_NAME"
