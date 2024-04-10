@@ -1,0 +1,14 @@
+[Unit]
+Description=Solana RPC Proxy
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+ExecStart=%h/.local/bin/solana-rpc-proxy
+EnvironmentFile=%h/solana-rpc-proxy.env
+Restart=always
+RestartSec=5
+TimeoutStartSec=600
+
+[Install]
+WantedBy=default.target
