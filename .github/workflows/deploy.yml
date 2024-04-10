@@ -33,6 +33,9 @@ jobs:
         with:
           targets: ${{ github.event.inputs.target }}
 
+      - name: Install build dependencies
+        run: sudo apt-get update && sudo apt-get install libssl-dev
+
       - name: Install Cross
         shell: bash
         run: |
