@@ -627,12 +627,15 @@ async fn handle_jsonrpc(
         .collect();
 
     info!(
-        "JSON-RPC {:?} Response batch size: {} (from_cache={}, from_upstream={}, upstream={:?})",
-        rpc_request,
+        "JSON-RPC {:?} Response batch size: {} (from_cache={}, from_upstream={})",
+        rpc_request
+            .calls()
+            .into_iter()
+            .map(|call| call.method.as_str())
+            .collect::<Vec<&str>>(),
         results.len(),
         cached_results.len(),
-        upstream_results.len(),
-        upstream_results
+        upstream_results.len()
     );
 
     Ok(match (rpc_request, results.as_slice()) {
